@@ -18,6 +18,21 @@
 
 <a href="<@spring.url '/personList'/>">Person List</a>
 
+<div>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+        <#list persons as person>
+        <tr>
+            <td>${person.id}</td>
+            <td>${person.name}</td>
+        </tr>
+    </#list>
+    </table>
+</div>
+
 </body>
 
 </html>

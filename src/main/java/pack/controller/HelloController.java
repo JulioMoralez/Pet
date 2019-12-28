@@ -5,8 +5,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pack.model.Person;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class HelloController {
@@ -20,23 +23,23 @@ public class HelloController {
     @Value("${spring.datasource.password}")
     private String password;
 
-
+    List<Person> persons = new ArrayList<>();
 
     @GetMapping("/hello")
     String sayHello(Model model) {
-        model.addAttribute("message","hello");
+
 
         Connection connection=null;
         try {
-            System.out.println("111");
             connection = DriverManager.getConnection(url, username, password);
             Statement statement = connection.createStatement();
             statement.execute("CREATE TABLE IF NOT EXISTS person (ID serial PRIMARY KEY, name   varchar(40));");
-            System.out.println("222");
-//            ResultSet resultSet = statement.executeQuery("SELECT * FROM fix_user");
-//            while (resultSet.next()){
-//                System.out.println(resultSet.getString(2));
-//            }
+            statement.execute("INSERT INTO person (name) VALUES ('Sam');");
+            statement.execute("INSERT INTO person (name) VALUES ('Max');");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM person");
+            while (resultSet.next()){
+                persons.add(new Person(resultSet.getInt(1), resultSet.getString(2)));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,6 +51,12 @@ public class HelloController {
                 e.printStackTrace();
             }
         }
+
+        persons.forEach(System.out::println);
+
+        model.addAttribute("message","hello");
+        model.addAttribute("persons",persons);
+
 
         return "index";
     }
